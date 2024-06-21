@@ -13,7 +13,10 @@ import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { StringFilter } from "../../util/StringFilter";
 import { Type } from "class-transformer";
-import { IsOptional } from "class-validator";
+import { IsOptional, ValidateNested } from "class-validator";
+import { BooleanNullableFilter } from "../../util/BooleanNullableFilter";
+import { StringNullableFilter } from "../../util/StringNullableFilter";
+import { WorkerListRelationFilter } from "../../worker/base/WorkerListRelationFilter";
 
 @InputType()
 class CompanyWhereInput {
@@ -27,6 +30,40 @@ class CompanyWhereInput {
     nullable: true,
   })
   id?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: BooleanNullableFilter,
+  })
+  @Type(() => BooleanNullableFilter)
+  @IsOptional()
+  @Field(() => BooleanNullableFilter, {
+    nullable: true,
+  })
+  isBigTech?: BooleanNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
+  @Type(() => StringNullableFilter)
+  @IsOptional()
+  @Field(() => StringNullableFilter, {
+    nullable: true,
+  })
+  name?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => WorkerListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => WorkerListRelationFilter)
+  @IsOptional()
+  @Field(() => WorkerListRelationFilter, {
+    nullable: true,
+  })
+  workers?: WorkerListRelationFilter;
 }
 
 export { CompanyWhereInput as CompanyWhereInput };

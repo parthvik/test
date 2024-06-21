@@ -29,11 +29,26 @@ export class SkillControllerBase {
   @swagger.ApiCreatedResponse({ type: Skill })
   async createSkill(@common.Body() data: SkillCreateInput): Promise<Skill> {
     return await this.service.createSkill({
-      data: data,
+      data: {
+        ...data,
+
+        worker: data.worker
+          ? {
+              connect: data.worker,
+            }
+          : undefined,
+      },
       select: {
         createdAt: true,
         id: true,
+        name: true,
         updatedAt: true,
+
+        worker: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
   }
@@ -48,7 +63,14 @@ export class SkillControllerBase {
       select: {
         createdAt: true,
         id: true,
+        name: true,
         updatedAt: true,
+
+        worker: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
   }
@@ -64,7 +86,14 @@ export class SkillControllerBase {
       select: {
         createdAt: true,
         id: true,
+        name: true,
         updatedAt: true,
+
+        worker: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
     if (result === null) {
@@ -85,11 +114,26 @@ export class SkillControllerBase {
     try {
       return await this.service.updateSkill({
         where: params,
-        data: data,
+        data: {
+          ...data,
+
+          worker: data.worker
+            ? {
+                connect: data.worker,
+              }
+            : undefined,
+        },
         select: {
           createdAt: true,
           id: true,
+          name: true,
           updatedAt: true,
+
+          worker: {
+            select: {
+              id: true,
+            },
+          },
         },
       });
     } catch (error) {
@@ -114,7 +158,14 @@ export class SkillControllerBase {
         select: {
           createdAt: true,
           id: true,
+          name: true,
           updatedAt: true,
+
+          worker: {
+            select: {
+              id: true,
+            },
+          },
         },
       });
     } catch (error) {

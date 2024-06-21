@@ -1,7 +1,7 @@
 import { Skill as TSkill } from "../api/skill/Skill";
 
-export const SKILL_TITLE_FIELD = "id";
+export const SKILL_TITLE_FIELD = "name";
 
 export const SkillTitle = (record: TSkill): string => {
-  return record.id?.toString() || String(record.id);
+  return record.name?.toString() || String(record.id);
 };

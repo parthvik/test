@@ -11,11 +11,41 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsString } from "class-validator";
+import {
+  IsNumber,
+  IsOptional,
+  ValidateNested,
+  IsDate,
+  IsString,
+  IsBoolean,
+} from "class-validator";
+import { Company } from "../../company/base/Company";
 import { Type } from "class-transformer";
+import { EmploymentStatus } from "../../employmentStatus/base/EmploymentStatus";
+import { Skill } from "../../skill/base/Skill";
 
 @ObjectType()
 class Worker {
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsNumber()
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  budget!: number | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => Company,
+  })
+  @ValidateNested()
+  @Type(() => Company)
+  @IsOptional()
+  company?: Company | null;
+
   @ApiProperty({
     required: true,
   })
@@ -25,12 +55,52 @@ class Worker {
   createdAt!: Date;
 
   @ApiProperty({
+    required: false,
+    type: () => EmploymentStatus,
+  })
+  @ValidateNested()
+  @Type(() => EmploymentStatus)
+  @IsOptional()
+  employmentStatus?: EmploymentStatus | null;
+
+  @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
   @Field(() => String)
   id!: string;
+
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @IsOptional()
+  @Field(() => Boolean, {
+    nullable: true,
+  })
+  isFullTime!: boolean | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  name!: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => [Skill],
+  })
+  @ValidateNested()
+  @Type(() => Skill)
+  @IsOptional()
+  skills?: Array<Skill>;
 
   @ApiProperty({
     required: true,

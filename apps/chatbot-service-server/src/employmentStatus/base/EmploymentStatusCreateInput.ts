@@ -9,5 +9,36 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-class EmploymentStatusCreateInput {}
+import { InputType, Field } from "@nestjs/graphql";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsString, IsOptional, ValidateNested } from "class-validator";
+import { WorkerCreateNestedManyWithoutEmploymentStatusesInput } from "./WorkerCreateNestedManyWithoutEmploymentStatusesInput";
+import { Type } from "class-transformer";
+
+@InputType()
+class EmploymentStatusCreateInput {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  status?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => WorkerCreateNestedManyWithoutEmploymentStatusesInput,
+  })
+  @ValidateNested()
+  @Type(() => WorkerCreateNestedManyWithoutEmploymentStatusesInput)
+  @IsOptional()
+  @Field(() => WorkerCreateNestedManyWithoutEmploymentStatusesInput, {
+    nullable: true,
+  })
+  workers?: WorkerCreateNestedManyWithoutEmploymentStatusesInput;
+}
+
 export { EmploymentStatusCreateInput as EmploymentStatusCreateInput };

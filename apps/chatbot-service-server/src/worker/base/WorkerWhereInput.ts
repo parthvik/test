@@ -11,12 +11,53 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { StringFilter } from "../../util/StringFilter";
+import { FloatNullableFilter } from "../../util/FloatNullableFilter";
 import { Type } from "class-transformer";
-import { IsOptional } from "class-validator";
+import { IsOptional, ValidateNested } from "class-validator";
+import { CompanyWhereUniqueInput } from "../../company/base/CompanyWhereUniqueInput";
+import { EmploymentStatusWhereUniqueInput } from "../../employmentStatus/base/EmploymentStatusWhereUniqueInput";
+import { StringFilter } from "../../util/StringFilter";
+import { BooleanNullableFilter } from "../../util/BooleanNullableFilter";
+import { StringNullableFilter } from "../../util/StringNullableFilter";
+import { SkillListRelationFilter } from "../../skill/base/SkillListRelationFilter";
 
 @InputType()
 class WorkerWhereInput {
+  @ApiProperty({
+    required: false,
+    type: FloatNullableFilter,
+  })
+  @Type(() => FloatNullableFilter)
+  @IsOptional()
+  @Field(() => FloatNullableFilter, {
+    nullable: true,
+  })
+  budget?: FloatNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => CompanyWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => CompanyWhereUniqueInput)
+  @IsOptional()
+  @Field(() => CompanyWhereUniqueInput, {
+    nullable: true,
+  })
+  company?: CompanyWhereUniqueInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => EmploymentStatusWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => EmploymentStatusWhereUniqueInput)
+  @IsOptional()
+  @Field(() => EmploymentStatusWhereUniqueInput, {
+    nullable: true,
+  })
+  employmentStatus?: EmploymentStatusWhereUniqueInput;
+
   @ApiProperty({
     required: false,
     type: StringFilter,
@@ -27,6 +68,40 @@ class WorkerWhereInput {
     nullable: true,
   })
   id?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: BooleanNullableFilter,
+  })
+  @Type(() => BooleanNullableFilter)
+  @IsOptional()
+  @Field(() => BooleanNullableFilter, {
+    nullable: true,
+  })
+  isFullTime?: BooleanNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
+  @Type(() => StringNullableFilter)
+  @IsOptional()
+  @Field(() => StringNullableFilter, {
+    nullable: true,
+  })
+  name?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => SkillListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => SkillListRelationFilter)
+  @IsOptional()
+  @Field(() => SkillListRelationFilter, {
+    nullable: true,
+  })
+  skills?: SkillListRelationFilter;
 }
 
 export { WorkerWhereInput as WorkerWhereInput };

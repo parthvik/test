@@ -18,25 +18,37 @@ import { WorkerService } from "../worker.service";
 const nonExistingId = "nonExistingId";
 const existingId = "existingId";
 const CREATE_INPUT = {
+  budget: 42.42,
   createdAt: new Date(),
   id: "exampleId",
+  isFullTime: "true",
+  name: "exampleName",
   updatedAt: new Date(),
 };
 const CREATE_RESULT = {
+  budget: 42.42,
   createdAt: new Date(),
   id: "exampleId",
+  isFullTime: "true",
+  name: "exampleName",
   updatedAt: new Date(),
 };
 const FIND_MANY_RESULT = [
   {
+    budget: 42.42,
     createdAt: new Date(),
     id: "exampleId",
+    isFullTime: "true",
+    name: "exampleName",
     updatedAt: new Date(),
   },
 ];
 const FIND_ONE_RESULT = {
+  budget: 42.42,
   createdAt: new Date(),
   id: "exampleId",
+  isFullTime: "true",
+  name: "exampleName",
   updatedAt: new Date(),
 };
 

@@ -17,7 +17,10 @@ import { Skill } from "./Skill";
 import { SkillCountArgs } from "./SkillCountArgs";
 import { SkillFindManyArgs } from "./SkillFindManyArgs";
 import { SkillFindUniqueArgs } from "./SkillFindUniqueArgs";
+import { CreateSkillArgs } from "./CreateSkillArgs";
+import { UpdateSkillArgs } from "./UpdateSkillArgs";
 import { DeleteSkillArgs } from "./DeleteSkillArgs";
+import { Worker } from "../../worker/base/Worker";
 import { SkillService } from "../skill.service";
 @graphql.Resolver(() => Skill)
 export class SkillResolverBase {
@@ -49,6 +52,49 @@ export class SkillResolverBase {
   }
 
   @graphql.Mutation(() => Skill)
+  async createSkill(@graphql.Args() args: CreateSkillArgs): Promise<Skill> {
+    return await this.service.createSkill({
+      ...args,
+      data: {
+        ...args.data,
+
+        worker: args.data.worker
+          ? {
+              connect: args.data.worker,
+            }
+          : undefined,
+      },
+    });
+  }
+
+  @graphql.Mutation(() => Skill)
+  async updateSkill(
+    @graphql.Args() args: UpdateSkillArgs
+  ): Promise<Skill | null> {
+    try {
+      return await this.service.updateSkill({
+        ...args,
+        data: {
+          ...args.data,
+
+          worker: args.data.worker
+            ? {
+                connect: args.data.worker,
+              }
+            : undefined,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new GraphQLError(
+          `No resource was found for ${JSON.stringify(args.where)}`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @graphql.Mutation(() => Skill)
   async deleteSkill(
     @graphql.Args() args: DeleteSkillArgs
   ): Promise<Skill | null> {
@@ -62,5 +108,18 @@ export class SkillResolverBase {
       }
       throw error;
     }
+  }
+
+  @graphql.ResolveField(() => Worker, {
+    nullable: true,
+    name: "worker",
+  })
+  async getWorker(@graphql.Parent() parent: Skill): Promise<Worker | null> {
+    const result = await this.service.getWorker(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
   }
 }

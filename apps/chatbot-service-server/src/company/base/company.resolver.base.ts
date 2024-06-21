@@ -17,7 +17,11 @@ import { Company } from "./Company";
 import { CompanyCountArgs } from "./CompanyCountArgs";
 import { CompanyFindManyArgs } from "./CompanyFindManyArgs";
 import { CompanyFindUniqueArgs } from "./CompanyFindUniqueArgs";
+import { CreateCompanyArgs } from "./CreateCompanyArgs";
+import { UpdateCompanyArgs } from "./UpdateCompanyArgs";
 import { DeleteCompanyArgs } from "./DeleteCompanyArgs";
+import { WorkerFindManyArgs } from "../../worker/base/WorkerFindManyArgs";
+import { Worker } from "../../worker/base/Worker";
 import { CompanyService } from "../company.service";
 @graphql.Resolver(() => Company)
 export class CompanyResolverBase {
@@ -51,6 +55,35 @@ export class CompanyResolverBase {
   }
 
   @graphql.Mutation(() => Company)
+  async createCompany(
+    @graphql.Args() args: CreateCompanyArgs
+  ): Promise<Company> {
+    return await this.service.createCompany({
+      ...args,
+      data: args.data,
+    });
+  }
+
+  @graphql.Mutation(() => Company)
+  async updateCompany(
+    @graphql.Args() args: UpdateCompanyArgs
+  ): Promise<Company | null> {
+    try {
+      return await this.service.updateCompany({
+        ...args,
+        data: args.data,
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new GraphQLError(
+          `No resource was found for ${JSON.stringify(args.where)}`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @graphql.Mutation(() => Company)
   async deleteCompany(
     @graphql.Args() args: DeleteCompanyArgs
   ): Promise<Company | null> {
@@ -64,5 +97,19 @@ export class CompanyResolverBase {
       }
       throw error;
     }
+  }
+
+  @graphql.ResolveField(() => [Worker], { name: "workers" })
+  async findWorkers(
+    @graphql.Parent() parent: Company,
+    @graphql.Args() args: WorkerFindManyArgs
+  ): Promise<Worker[]> {
+    const results = await this.service.findWorkers(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
   }
 }

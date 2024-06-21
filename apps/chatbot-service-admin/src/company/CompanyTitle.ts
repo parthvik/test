@@ -1,7 +1,7 @@
 import { Company as TCompany } from "../api/company/Company";
 
-export const COMPANY_TITLE_FIELD = "id";
+export const COMPANY_TITLE_FIELD = "name";
 
 export const CompanyTitle = (record: TCompany): string => {
-  return record.id?.toString() || String(record.id);
+  return record.name?.toString() || String(record.id);
 };

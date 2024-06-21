@@ -13,6 +13,7 @@ import { PrismaService } from "../../prisma/prisma.service";
 import {
   Prisma,
   EmploymentStatus as PrismaEmploymentStatus,
+  Worker as PrismaWorker,
 } from "@prisma/client";
 
 export class EmploymentStatusServiceBase {
@@ -48,5 +49,16 @@ export class EmploymentStatusServiceBase {
     args: Prisma.EmploymentStatusDeleteArgs
   ): Promise<PrismaEmploymentStatus> {
     return this.prisma.employmentStatus.delete(args);
+  }
+
+  async findWorkers(
+    parentId: string,
+    args: Prisma.WorkerFindManyArgs
+  ): Promise<PrismaWorker[]> {
+    return this.prisma.employmentStatus
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .workers(args);
   }
 }

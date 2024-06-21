@@ -9,5 +9,36 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-class SkillUpdateInput {}
+import { InputType, Field } from "@nestjs/graphql";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsString, IsOptional, ValidateNested } from "class-validator";
+import { WorkerWhereUniqueInput } from "../../worker/base/WorkerWhereUniqueInput";
+import { Type } from "class-transformer";
+
+@InputType()
+class SkillUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  name?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => WorkerWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => WorkerWhereUniqueInput)
+  @IsOptional()
+  @Field(() => WorkerWhereUniqueInput, {
+    nullable: true,
+  })
+  worker?: WorkerWhereUniqueInput | null;
+}
+
 export { SkillUpdateInput as SkillUpdateInput };

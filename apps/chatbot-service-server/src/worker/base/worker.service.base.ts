@@ -10,7 +10,14 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Worker as PrismaWorker } from "@prisma/client";
+
+import {
+  Prisma,
+  Worker as PrismaWorker,
+  Skill as PrismaSkill,
+  Company as PrismaCompany,
+  EmploymentStatus as PrismaEmploymentStatus,
+} from "@prisma/client";
 
 export class WorkerServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -35,5 +42,34 @@ export class WorkerServiceBase {
   }
   async deleteWorker(args: Prisma.WorkerDeleteArgs): Promise<PrismaWorker> {
     return this.prisma.worker.delete(args);
+  }
+
+  async findSkills(
+    parentId: string,
+    args: Prisma.SkillFindManyArgs
+  ): Promise<PrismaSkill[]> {
+    return this.prisma.worker
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .skills(args);
+  }
+
+  async getCompany(parentId: string): Promise<PrismaCompany | null> {
+    return this.prisma.worker
+      .findUnique({
+        where: { id: parentId },
+      })
+      .company();
+  }
+
+  async getEmploymentStatus(
+    parentId: string
+  ): Promise<PrismaEmploymentStatus | null> {
+    return this.prisma.worker
+      .findUnique({
+        where: { id: parentId },
+      })
+      .employmentStatus();
   }
 }

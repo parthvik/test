@@ -9,5 +9,36 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-class EmploymentStatusUpdateInput {}
+import { InputType, Field } from "@nestjs/graphql";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsString, IsOptional, ValidateNested } from "class-validator";
+import { WorkerUpdateManyWithoutEmploymentStatusesInput } from "./WorkerUpdateManyWithoutEmploymentStatusesInput";
+import { Type } from "class-transformer";
+
+@InputType()
+class EmploymentStatusUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  status?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => WorkerUpdateManyWithoutEmploymentStatusesInput,
+  })
+  @ValidateNested()
+  @Type(() => WorkerUpdateManyWithoutEmploymentStatusesInput)
+  @IsOptional()
+  @Field(() => WorkerUpdateManyWithoutEmploymentStatusesInput, {
+    nullable: true,
+  })
+  workers?: WorkerUpdateManyWithoutEmploymentStatusesInput;
+}
+
 export { EmploymentStatusUpdateInput as EmploymentStatusUpdateInput };

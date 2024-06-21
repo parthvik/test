@@ -13,7 +13,9 @@ import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { StringFilter } from "../../util/StringFilter";
 import { Type } from "class-transformer";
-import { IsOptional } from "class-validator";
+import { IsOptional, ValidateNested } from "class-validator";
+import { StringNullableFilter } from "../../util/StringNullableFilter";
+import { WorkerWhereUniqueInput } from "../../worker/base/WorkerWhereUniqueInput";
 
 @InputType()
 class SkillWhereInput {
@@ -27,6 +29,29 @@ class SkillWhereInput {
     nullable: true,
   })
   id?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
+  @Type(() => StringNullableFilter)
+  @IsOptional()
+  @Field(() => StringNullableFilter, {
+    nullable: true,
+  })
+  name?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => WorkerWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => WorkerWhereUniqueInput)
+  @IsOptional()
+  @Field(() => WorkerWhereUniqueInput, {
+    nullable: true,
+  })
+  worker?: WorkerWhereUniqueInput;
 }
 
 export { SkillWhereInput as SkillWhereInput };

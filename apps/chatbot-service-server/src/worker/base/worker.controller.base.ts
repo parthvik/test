@@ -22,6 +22,9 @@ import { Worker } from "./Worker";
 import { WorkerFindManyArgs } from "./WorkerFindManyArgs";
 import { WorkerWhereUniqueInput } from "./WorkerWhereUniqueInput";
 import { WorkerUpdateInput } from "./WorkerUpdateInput";
+import { SkillFindManyArgs } from "../../skill/base/SkillFindManyArgs";
+import { Skill } from "../../skill/base/Skill";
+import { SkillWhereUniqueInput } from "../../skill/base/SkillWhereUniqueInput";
 
 export class WorkerControllerBase {
   constructor(protected readonly service: WorkerService) {}
@@ -29,10 +32,41 @@ export class WorkerControllerBase {
   @swagger.ApiCreatedResponse({ type: Worker })
   async createWorker(@common.Body() data: WorkerCreateInput): Promise<Worker> {
     return await this.service.createWorker({
-      data: data,
+      data: {
+        ...data,
+
+        company: data.company
+          ? {
+              connect: data.company,
+            }
+          : undefined,
+
+        employmentStatus: data.employmentStatus
+          ? {
+              connect: data.employmentStatus,
+            }
+          : undefined,
+      },
       select: {
+        budget: true,
+
+        company: {
+          select: {
+            id: true,
+          },
+        },
+
         createdAt: true,
+
+        employmentStatus: {
+          select: {
+            id: true,
+          },
+        },
+
         id: true,
+        isFullTime: true,
+        name: true,
         updatedAt: true,
       },
     });
@@ -46,8 +80,25 @@ export class WorkerControllerBase {
     return this.service.workers({
       ...args,
       select: {
+        budget: true,
+
+        company: {
+          select: {
+            id: true,
+          },
+        },
+
         createdAt: true,
+
+        employmentStatus: {
+          select: {
+            id: true,
+          },
+        },
+
         id: true,
+        isFullTime: true,
+        name: true,
         updatedAt: true,
       },
     });
@@ -62,8 +113,25 @@ export class WorkerControllerBase {
     const result = await this.service.worker({
       where: params,
       select: {
+        budget: true,
+
+        company: {
+          select: {
+            id: true,
+          },
+        },
+
         createdAt: true,
+
+        employmentStatus: {
+          select: {
+            id: true,
+          },
+        },
+
         id: true,
+        isFullTime: true,
+        name: true,
         updatedAt: true,
       },
     });
@@ -85,10 +153,41 @@ export class WorkerControllerBase {
     try {
       return await this.service.updateWorker({
         where: params,
-        data: data,
+        data: {
+          ...data,
+
+          company: data.company
+            ? {
+                connect: data.company,
+              }
+            : undefined,
+
+          employmentStatus: data.employmentStatus
+            ? {
+                connect: data.employmentStatus,
+              }
+            : undefined,
+        },
         select: {
+          budget: true,
+
+          company: {
+            select: {
+              id: true,
+            },
+          },
+
           createdAt: true,
+
+          employmentStatus: {
+            select: {
+              id: true,
+            },
+          },
+
           id: true,
+          isFullTime: true,
+          name: true,
           updatedAt: true,
         },
       });
@@ -112,8 +211,25 @@ export class WorkerControllerBase {
       return await this.service.deleteWorker({
         where: params,
         select: {
+          budget: true,
+
+          company: {
+            select: {
+              id: true,
+            },
+          },
+
           createdAt: true,
+
+          employmentStatus: {
+            select: {
+              id: true,
+            },
+          },
+
           id: true,
+          isFullTime: true,
+          name: true,
           updatedAt: true,
         },
       });
@@ -125,5 +241,86 @@ export class WorkerControllerBase {
       }
       throw error;
     }
+  }
+
+  @common.Get("/:id/skills")
+  @ApiNestedQuery(SkillFindManyArgs)
+  async findSkills(
+    @common.Req() request: Request,
+    @common.Param() params: WorkerWhereUniqueInput
+  ): Promise<Skill[]> {
+    const query = plainToClass(SkillFindManyArgs, request.query);
+    const results = await this.service.findSkills(params.id, {
+      ...query,
+      select: {
+        createdAt: true,
+        id: true,
+        name: true,
+        updatedAt: true,
+
+        worker: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/skills")
+  async connectSkills(
+    @common.Param() params: WorkerWhereUniqueInput,
+    @common.Body() body: SkillWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      skills: {
+        connect: body,
+      },
+    };
+    await this.service.updateWorker({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/skills")
+  async updateSkills(
+    @common.Param() params: WorkerWhereUniqueInput,
+    @common.Body() body: SkillWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      skills: {
+        set: body,
+      },
+    };
+    await this.service.updateWorker({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/skills")
+  async disconnectSkills(
+    @common.Param() params: WorkerWhereUniqueInput,
+    @common.Body() body: SkillWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      skills: {
+        disconnect: body,
+      },
+    };
+    await this.service.updateWorker({
+      where: params,
+      data,
+      select: { id: true },
+    });
   }
 }

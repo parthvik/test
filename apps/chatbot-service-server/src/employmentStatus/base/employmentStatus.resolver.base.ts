@@ -17,7 +17,11 @@ import { EmploymentStatus } from "./EmploymentStatus";
 import { EmploymentStatusCountArgs } from "./EmploymentStatusCountArgs";
 import { EmploymentStatusFindManyArgs } from "./EmploymentStatusFindManyArgs";
 import { EmploymentStatusFindUniqueArgs } from "./EmploymentStatusFindUniqueArgs";
+import { CreateEmploymentStatusArgs } from "./CreateEmploymentStatusArgs";
+import { UpdateEmploymentStatusArgs } from "./UpdateEmploymentStatusArgs";
 import { DeleteEmploymentStatusArgs } from "./DeleteEmploymentStatusArgs";
+import { WorkerFindManyArgs } from "../../worker/base/WorkerFindManyArgs";
+import { Worker } from "../../worker/base/Worker";
 import { EmploymentStatusService } from "../employmentStatus.service";
 @graphql.Resolver(() => EmploymentStatus)
 export class EmploymentStatusResolverBase {
@@ -51,6 +55,35 @@ export class EmploymentStatusResolverBase {
   }
 
   @graphql.Mutation(() => EmploymentStatus)
+  async createEmploymentStatus(
+    @graphql.Args() args: CreateEmploymentStatusArgs
+  ): Promise<EmploymentStatus> {
+    return await this.service.createEmploymentStatus({
+      ...args,
+      data: args.data,
+    });
+  }
+
+  @graphql.Mutation(() => EmploymentStatus)
+  async updateEmploymentStatus(
+    @graphql.Args() args: UpdateEmploymentStatusArgs
+  ): Promise<EmploymentStatus | null> {
+    try {
+      return await this.service.updateEmploymentStatus({
+        ...args,
+        data: args.data,
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new GraphQLError(
+          `No resource was found for ${JSON.stringify(args.where)}`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @graphql.Mutation(() => EmploymentStatus)
   async deleteEmploymentStatus(
     @graphql.Args() args: DeleteEmploymentStatusArgs
   ): Promise<EmploymentStatus | null> {
@@ -64,5 +97,19 @@ export class EmploymentStatusResolverBase {
       }
       throw error;
     }
+  }
+
+  @graphql.ResolveField(() => [Worker], { name: "workers" })
+  async findWorkers(
+    @graphql.Parent() parent: EmploymentStatus,
+    @graphql.Args() args: WorkerFindManyArgs
+  ): Promise<Worker[]> {
+    const results = await this.service.findWorkers(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
   }
 }

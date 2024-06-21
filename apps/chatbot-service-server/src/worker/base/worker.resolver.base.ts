@@ -17,7 +17,13 @@ import { Worker } from "./Worker";
 import { WorkerCountArgs } from "./WorkerCountArgs";
 import { WorkerFindManyArgs } from "./WorkerFindManyArgs";
 import { WorkerFindUniqueArgs } from "./WorkerFindUniqueArgs";
+import { CreateWorkerArgs } from "./CreateWorkerArgs";
+import { UpdateWorkerArgs } from "./UpdateWorkerArgs";
 import { DeleteWorkerArgs } from "./DeleteWorkerArgs";
+import { SkillFindManyArgs } from "../../skill/base/SkillFindManyArgs";
+import { Skill } from "../../skill/base/Skill";
+import { Company } from "../../company/base/Company";
+import { EmploymentStatus } from "../../employmentStatus/base/EmploymentStatus";
 import { WorkerService } from "../worker.service";
 @graphql.Resolver(() => Worker)
 export class WorkerResolverBase {
@@ -49,6 +55,61 @@ export class WorkerResolverBase {
   }
 
   @graphql.Mutation(() => Worker)
+  async createWorker(@graphql.Args() args: CreateWorkerArgs): Promise<Worker> {
+    return await this.service.createWorker({
+      ...args,
+      data: {
+        ...args.data,
+
+        company: args.data.company
+          ? {
+              connect: args.data.company,
+            }
+          : undefined,
+
+        employmentStatus: args.data.employmentStatus
+          ? {
+              connect: args.data.employmentStatus,
+            }
+          : undefined,
+      },
+    });
+  }
+
+  @graphql.Mutation(() => Worker)
+  async updateWorker(
+    @graphql.Args() args: UpdateWorkerArgs
+  ): Promise<Worker | null> {
+    try {
+      return await this.service.updateWorker({
+        ...args,
+        data: {
+          ...args.data,
+
+          company: args.data.company
+            ? {
+                connect: args.data.company,
+              }
+            : undefined,
+
+          employmentStatus: args.data.employmentStatus
+            ? {
+                connect: args.data.employmentStatus,
+              }
+            : undefined,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new GraphQLError(
+          `No resource was found for ${JSON.stringify(args.where)}`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @graphql.Mutation(() => Worker)
   async deleteWorker(
     @graphql.Args() args: DeleteWorkerArgs
   ): Promise<Worker | null> {
@@ -62,5 +123,47 @@ export class WorkerResolverBase {
       }
       throw error;
     }
+  }
+
+  @graphql.ResolveField(() => [Skill], { name: "skills" })
+  async findSkills(
+    @graphql.Parent() parent: Worker,
+    @graphql.Args() args: SkillFindManyArgs
+  ): Promise<Skill[]> {
+    const results = await this.service.findSkills(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @graphql.ResolveField(() => Company, {
+    nullable: true,
+    name: "company",
+  })
+  async getCompany(@graphql.Parent() parent: Worker): Promise<Company | null> {
+    const result = await this.service.getCompany(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
+  }
+
+  @graphql.ResolveField(() => EmploymentStatus, {
+    nullable: true,
+    name: "employmentStatus",
+  })
+  async getEmploymentStatus(
+    @graphql.Parent() parent: Worker
+  ): Promise<EmploymentStatus | null> {
+    const result = await this.service.getEmploymentStatus(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
   }
 }

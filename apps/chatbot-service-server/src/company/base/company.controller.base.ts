@@ -22,6 +22,9 @@ import { Company } from "./Company";
 import { CompanyFindManyArgs } from "./CompanyFindManyArgs";
 import { CompanyWhereUniqueInput } from "./CompanyWhereUniqueInput";
 import { CompanyUpdateInput } from "./CompanyUpdateInput";
+import { WorkerFindManyArgs } from "../../worker/base/WorkerFindManyArgs";
+import { Worker } from "../../worker/base/Worker";
+import { WorkerWhereUniqueInput } from "../../worker/base/WorkerWhereUniqueInput";
 
 export class CompanyControllerBase {
   constructor(protected readonly service: CompanyService) {}
@@ -35,6 +38,8 @@ export class CompanyControllerBase {
       select: {
         createdAt: true,
         id: true,
+        isBigTech: true,
+        name: true,
         updatedAt: true,
       },
     });
@@ -50,6 +55,8 @@ export class CompanyControllerBase {
       select: {
         createdAt: true,
         id: true,
+        isBigTech: true,
+        name: true,
         updatedAt: true,
       },
     });
@@ -66,6 +73,8 @@ export class CompanyControllerBase {
       select: {
         createdAt: true,
         id: true,
+        isBigTech: true,
+        name: true,
         updatedAt: true,
       },
     });
@@ -91,6 +100,8 @@ export class CompanyControllerBase {
         select: {
           createdAt: true,
           id: true,
+          isBigTech: true,
+          name: true,
           updatedAt: true,
         },
       });
@@ -116,6 +127,8 @@ export class CompanyControllerBase {
         select: {
           createdAt: true,
           id: true,
+          isBigTech: true,
+          name: true,
           updatedAt: true,
         },
       });
@@ -127,5 +140,96 @@ export class CompanyControllerBase {
       }
       throw error;
     }
+  }
+
+  @common.Get("/:id/workers")
+  @ApiNestedQuery(WorkerFindManyArgs)
+  async findWorkers(
+    @common.Req() request: Request,
+    @common.Param() params: CompanyWhereUniqueInput
+  ): Promise<Worker[]> {
+    const query = plainToClass(WorkerFindManyArgs, request.query);
+    const results = await this.service.findWorkers(params.id, {
+      ...query,
+      select: {
+        budget: true,
+
+        company: {
+          select: {
+            id: true,
+          },
+        },
+
+        createdAt: true,
+
+        employmentStatus: {
+          select: {
+            id: true,
+          },
+        },
+
+        id: true,
+        isFullTime: true,
+        name: true,
+        updatedAt: true,
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/workers")
+  async connectWorkers(
+    @common.Param() params: CompanyWhereUniqueInput,
+    @common.Body() body: WorkerWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      workers: {
+        connect: body,
+      },
+    };
+    await this.service.updateCompany({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/workers")
+  async updateWorkers(
+    @common.Param() params: CompanyWhereUniqueInput,
+    @common.Body() body: WorkerWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      workers: {
+        set: body,
+      },
+    };
+    await this.service.updateCompany({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/workers")
+  async disconnectWorkers(
+    @common.Param() params: CompanyWhereUniqueInput,
+    @common.Body() body: WorkerWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      workers: {
+        disconnect: body,
+      },
+    };
+    await this.service.updateCompany({
+      where: params,
+      data,
+      select: { id: true },
+    });
   }
 }

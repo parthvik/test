@@ -10,7 +10,11 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Skill as PrismaSkill } from "@prisma/client";
+import {
+  Prisma,
+  Skill as PrismaSkill,
+  Worker as PrismaWorker,
+} from "@prisma/client";
 
 export class SkillServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -33,5 +37,13 @@ export class SkillServiceBase {
   }
   async deleteSkill(args: Prisma.SkillDeleteArgs): Promise<PrismaSkill> {
     return this.prisma.skill.delete(args);
+  }
+
+  async getWorker(parentId: string): Promise<PrismaWorker | null> {
+    return this.prisma.skill
+      .findUnique({
+        where: { id: parentId },
+      })
+      .worker();
   }
 }

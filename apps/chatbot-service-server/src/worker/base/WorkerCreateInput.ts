@@ -9,5 +9,90 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-class WorkerCreateInput {}
+import { InputType, Field } from "@nestjs/graphql";
+import { ApiProperty } from "@nestjs/swagger";
+import {
+  IsNumber,
+  IsOptional,
+  ValidateNested,
+  IsBoolean,
+  IsString,
+} from "class-validator";
+import { CompanyWhereUniqueInput } from "../../company/base/CompanyWhereUniqueInput";
+import { Type } from "class-transformer";
+import { EmploymentStatusWhereUniqueInput } from "../../employmentStatus/base/EmploymentStatusWhereUniqueInput";
+import { SkillCreateNestedManyWithoutWorkersInput } from "./SkillCreateNestedManyWithoutWorkersInput";
+
+@InputType()
+class WorkerCreateInput {
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsNumber()
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  budget?: number | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => CompanyWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => CompanyWhereUniqueInput)
+  @IsOptional()
+  @Field(() => CompanyWhereUniqueInput, {
+    nullable: true,
+  })
+  company?: CompanyWhereUniqueInput | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => EmploymentStatusWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => EmploymentStatusWhereUniqueInput)
+  @IsOptional()
+  @Field(() => EmploymentStatusWhereUniqueInput, {
+    nullable: true,
+  })
+  employmentStatus?: EmploymentStatusWhereUniqueInput | null;
+
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @IsOptional()
+  @Field(() => Boolean, {
+    nullable: true,
+  })
+  isFullTime?: boolean | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  name?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => SkillCreateNestedManyWithoutWorkersInput,
+  })
+  @ValidateNested()
+  @Type(() => SkillCreateNestedManyWithoutWorkersInput)
+  @IsOptional()
+  @Field(() => SkillCreateNestedManyWithoutWorkersInput, {
+    nullable: true,
+  })
+  skills?: SkillCreateNestedManyWithoutWorkersInput;
+}
+
 export { WorkerCreateInput as WorkerCreateInput };
