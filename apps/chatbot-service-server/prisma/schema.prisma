@@ -1,0 +1,48 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Skill {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  name      String?
+  updatedAt DateTime @updatedAt
+  worker    Worker?  @relation(fields: [workerId], references: [id])
+  workerId  String?
+}
+
+model Worker {
+  budget             Float?
+  company            Company?          @relation(fields: [companyId], references: [id])
+  companyId          String?
+  createdAt          DateTime          @default(now())
+  employmentStatus   EmploymentStatus? @relation(fields: [employmentStatusId], references: [id])
+  employmentStatusId String?
+  id                 String            @id @default(cuid())
+  isFullTime         Boolean?
+  name               String?
+  skills             Skill[]
+  updatedAt          DateTime          @updatedAt
+}
+
+model EmploymentStatus {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  status    String?
+  updatedAt DateTime @updatedAt
+  workers   Worker[]
+}
+
+model Company {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  isBigTech Boolean?
+  name      String?
+  updatedAt DateTime @updatedAt
+  workers   Worker[]
+}
